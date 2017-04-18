@@ -88,13 +88,18 @@ export default class Routing extends Component {
   render() {
     return (
       <View style={styles.Routing}>
-        <Tabs selected={this.state.page} style={{backgroundColor:'white'}}
-              selectedStyle={{selected: true}} onSelect={el=>this.setState({page:el.props.name})}>
-            {Object.keys(this.routes).map((name, index) => 
+        <Tabs selected={this.state.page} 
+              style={{backgroundColor:'white'}}
+              selectedStyle={{selected: true}} 
+              onSelect={el=>this.setState({page:el.props.name})}>
+              {Object.keys(this.routes).map((name, index) => 
                 <TabButton 
-                  name={this.routes[name].title} key={this.routes[name].title} route={this.routes[name]} styles={styles}
+                  name={this.routes[name].title} 
+                  key={this.routes[name].title} 
+                  route={this.routes[name]} 
+                  styles={styles}
                 />)
-            }
+              }
         </Tabs>
         <View style={styles.Scene}>{this.routes[this.state.page].scene}</View>
       </View>

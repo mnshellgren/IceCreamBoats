@@ -81,6 +81,7 @@ export default class MapScene extends Component {
 
   constructor(props) {
     super(props);
+    console.log(this.state)
     this.state = {
       boats: {},
       region: {
@@ -107,6 +108,14 @@ export default class MapScene extends Component {
 }
 
   componentWillMount() {
+    /*
+     *this.setState({
+     *  region: {
+     *    latitude: 0,
+     *    longitude: 0,
+     *  }
+     *})
+     */
     firebase.database().ref('boats').on('value', this.updateBoats.bind(this));
   }
 
@@ -122,6 +131,11 @@ export default class MapScene extends Component {
       this.setState({boats: boats});
     }
   }
+  onRegionChangeComplete = (newRegion) => {
+    this.setState({
+      region: newRegion
+    })
+  }
 
   render() {
     return (
@@ -130,8 +144,9 @@ export default class MapScene extends Component {
         <MapView
           provider={this.props.provider}
           style={styles.map}
-          initialRegion={this.state.region}
+          region={this.state.region}
           onPress={(e) => this.onMapPress(e)}
+          onRegionChangeComplete={(e) => this.onRegionChangeComplete(e)}
         >
           {this.state.markers.map(marker => (
             <MapView.Marker
