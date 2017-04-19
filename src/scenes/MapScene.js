@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import MapView from 'react-native-maps';
 import {
   View,
@@ -69,12 +69,6 @@ class Overlay extends Component {
   }
 }
 
-const { width, height } = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
-const LATITUDE_DELTA = 0.0922;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 let id = 0;
 
 export default class MapScene extends Component {
@@ -84,12 +78,6 @@ export default class MapScene extends Component {
     console.log(this.state)
     this.state = {
       boats: {},
-      region: {
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      },
       markers: [],
     };
     this.updateBoats.bind(this);
@@ -132,9 +120,7 @@ export default class MapScene extends Component {
     }
   }
   onRegionChangeComplete = (newRegion) => {
-    this.setState({
-      region: newRegion
-    })
+    this.props.saveRegion(newRegion)
   }
 
   render() {
@@ -144,7 +130,7 @@ export default class MapScene extends Component {
         <MapView
           provider={this.props.provider}
           style={styles.map}
-          region={this.state.region}
+          region={this.props.region}
           onPress={(e) => this.onMapPress(e)}
           onRegionChangeComplete={(e) => this.onRegionChangeComplete(e)}
         >
@@ -163,6 +149,11 @@ export default class MapScene extends Component {
       </View>
     );
   }
+}
+MapScene.propTypes = {
+  saveRegion: PropTypes.func.isRequired,
+  region: PropTypes.object.isRequired
+
 }
 
 function toLatLang(object) {

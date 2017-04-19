@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   StyleSheet,
   BackAndroid,
+  Dimensions,
   Image
 } from 'react-native';
 import MapScene from '../scenes/MapScene';
@@ -48,26 +49,60 @@ function NavButton(props) {
     </TouchableHighlight>
   );
 }
+const { width, height } = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
+const LATITUDE = 37.78825;
+const LONGITUDE = -122.4324;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class Routing extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {page:'Karta'};
     this.openAdmin = this.openAdmin.bind(this);
+    this.saveRegion = this.saveRegion.bind(this);
 
+    this.state = {
+      page:'Karta',
+      region: {
+        latitude: LATITUDE,
+        longitude: LONGITUDE,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+    };
     this.routes = {
-      Info: {scene: <About openAdmin={this.openAdmin} />, title: 'Info',  index: INDEX.ABOUT, 
-        iconSelected: require('../../assets/tabbar/infoSelected/infoSelected.png'), icon: require('../../assets/tabbar/info/info.png')},
-      Karta: {scene: <MapScene />, title: 'Karta',   index: INDEX.MAP, 
-        iconSelected: require('../../assets/tabbar/mapSelected/mapSelected.png'), icon: require('../../assets/tabbar/map/map.png')},
+      Info: {scene: <About openAdmin={this.openAdmin} />, title: 'Info',  
+        index: INDEX.ABOUT, 
+        iconSelected: 
+          require('../../assets/tabbar/infoSelected/infoSelected.png'), 
+        icon: require('../../assets/tabbar/info/info.png')},
+      Karta: {scene: <MapScene 
+                      region={this.state.region} 
+                      saveRegion={(p) => this.saveRegion(p)} />, 
+        title: 'Karta', 
+        index: INDEX.MAP, 
+        iconSelected: 
+          require('../../assets/tabbar/mapSelected/mapSelected.png'), 
+        icon: require('../../assets/tabbar/map/map.png')},
       Utbud: {scene: <Menu />,     title: 'Utbud',   index: INDEX.MENU, 
-        iconSelected: require('../../assets/tabbar/menuSelected/menuSelected.png'), icon: require('../../assets/tabbar/menu/menu.png')},
+        iconSelected: 
+          require('../../assets/tabbar/menuSelected/menuSelected.png'), 
+        icon: require('../../assets/tabbar/menu/menu.png')},
       Admin: {scene: <Admin />,    title: 'Admin',   index: INDEX.ADMIN, 
-       iconSelected: require('../../assets/tabbar/infoSelected/infoSelected.png'), icon: require('../../assets/tabbar/info/info.png')},
+       iconSelected: 
+         require('../../assets/tabbar/infoSelected/infoSelected.png'), 
+       icon: require('../../assets/tabbar/info/info.png')},
     };
 
     this.setAndroidBackPressButton();
+  }  
+
+  saveRegion(newRegion) {
+    this.setState({
+      region: newRegion
+    })
   }
 
   setAndroidBackPressButton() {
@@ -88,8 +123,9 @@ export default class Routing extends Component {
   render() {
     return (
       <View style={styles.Routing}>
+        {<View style={styles.Scene}>{this.routes[this.state.page].scene}</View>}
         <Tabs selected={this.state.page} 
-              style={{backgroundColor:'white'}}
+              style={styles.Routing}
               selectedStyle={{selected: true}} 
               onSelect={el=>this.setState({page:el.props.name})}>
               {Object.keys(this.routes).map((name, index) => 
@@ -101,7 +137,6 @@ export default class Routing extends Component {
                 />)
               }
         </Tabs>
-        <View style={styles.Scene}>{this.routes[this.state.page].scene}</View>
       </View>
     );
 
